@@ -1,3 +1,33 @@
+#cp .gitignore .dockerignore
+---------------------- .gitignore ---------------------- 
+# ================= youssef ==================
+env/
+SH/
+openproject.bat
+go.bat
+runserver.bat
+help.txt
+help1.txt
+help2.txt
+help/
+summary_v1.py
+summary_v2.py
+summary_v3.py
+.env
+old/
+Dockerfile
+docker-compose*
+README.md
+*.pyc
+.media/
+link.txt
+db.sqlite3
+all_python_code_part1.txt
+all_python_code_part2.txt
+all_python_code_part3.txt
+__pycache__
+x
+#========================================================
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -216,3 +246,5 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+step.txt
+test.db
