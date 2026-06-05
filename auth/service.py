@@ -4,6 +4,8 @@ from fastapi import HTTPException
 from sqlalchemy import or_
 from core import security
 from user.service import create_user
+# -----
+from core.security import decode_token, create_access_token
 def register_user(user,db: Session):
     # db_user = db.query( User).filter( or_( User.email == user.email,User.username == user.username ) ).first()
     # if db_user:
@@ -35,14 +37,29 @@ def login(user,   db: Session):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     access_token = security.create_access_token( data={"sub":  str(db_user.id), "role": db_user.role}) #{"sub": str(user.id),  "role": user.role}
+    refresh_token = security.create_refresh_token( {     "sub": str(db_user.id) }
+)
     if not access_token:
         raise HTTPException( status_code=401, detail="Invalid credentials")
         # return None
     return {
         "access_token": access_token,
+        "refresh_token": refresh_token,
         "token_type": "bearer"
     }
 
 
 
 
+def refresh_access_token(refresh_token: str):
+
+    payload = decode_token(refresh_token)
+
+    if payload.get("type") != "refresh":
+        raise HTTPException(      status_code=401,        detail="Invalid refresh token"    )
+
+    user_id = payload.get("sub")
+
+    access_token = create_access_token({"sub": user_id,  } )
+
+    return {  "access_token": access_token,    "token_type": "bearer"  }

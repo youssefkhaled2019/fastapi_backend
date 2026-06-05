@@ -21,9 +21,15 @@ def create_user(db: Session, user: UserCreate):
         raise HTTPException(  status_code=400,detail="error - create_user ")
 
 
-def get_users(db: Session):
-    return db.query(User).all()
+# def get_users(db: Session):
+#     return db.query(User).all()
 
+def get_users(db: Session,skip: int = 0, limit: int = 10,search: str | None = None):
+    # return db.query(User).offset(skip).limit(limit).all()
+    query = db.query(User)
+    if search:
+        query = query.filter(or_(User.username.ilike(f"%{search}%"),User.email.ilike(f"%{search}%")))
+    return query.offset(skip).limit(limit).all()
 
 def get_user(db: Session, user_id: int):
     return db.query(User).filter(User.id == user_id).first()

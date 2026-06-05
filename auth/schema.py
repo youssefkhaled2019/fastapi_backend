@@ -27,8 +27,13 @@ class LoginSchema(BaseModel):
 
 class LoginTokenResponse(BaseModel):
     access_token: str
+    refresh_token: str
     token_type: str
     class Config:
         from_attributes = True
 
+# class RefreshRequest(BaseModel):
+#     refresh_token: str
 
+class RefreshTokenRequest(BaseModel):
+    refresh_token: str

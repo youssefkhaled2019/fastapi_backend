@@ -23,31 +23,22 @@ def get_current_user(  db: Session = Depends(get_db),token: str = Depends(oauth2
 
     payload = decode_token(token)
 
-    if not payload:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
-        )
+    # if not payload:
+    #     raise HTTPException(    status_code=status.HTTP_401_UNAUTHORIZED,   detail="Invalid token" )
 
-   
+    if payload.get("type") != "access":
+        raise HTTPException(   status_code=401,    detail="Invalid access token" )
     try:
         user_id = int(payload.get("sub"))
     except:
         raise HTTPException(status_code=401, detail="Invalid token")
     
     if not user_id:
-        raise HTTPException(
-            status_code=401,
-            detail="Invalid token payload"
-        )
+        raise HTTPException( status_code=401,  detail="Invalid token payload")
     user = db.query(User).filter(  User.id == user_id).first()
 
     if not user:
-
-        raise HTTPException(
-            status_code=401,
-            detail="User not found"
-        )
+        raise HTTPException(    status_code=401,    detail="User not found" )
 
     return user
     # return {"user_id": user_id}        
@@ -68,3 +59,22 @@ def get_current_admin(user: User = Depends(get_current_user)):
 #         )
 
 #     return user
+
+
+# ==============================================
+# payload = decode_token(refresh_token)
+
+# if payload.get("type") != "refresh":
+#     raise HTTPException(
+#         status_code=401,
+#         detail="Invalid refresh token"
+#     )
+# ==============================================
+# وفي get_current_user() يمكنك زيادة الأمان أيضًا:
+# payload = decode_token(token)
+
+# if payload.get("type") != "access":
+#     raise HTTPException(
+#         status_code=401,
+#         detail="Invalid access token"
+#     )

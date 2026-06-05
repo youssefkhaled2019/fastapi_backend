@@ -11,7 +11,7 @@ from core.config import settings
 # SECRET_KEY = settings.SECRET_KEY
 ALGORITHM =settings.ALGORITHM #"HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
-
+REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS 
 pwd_context = CryptContext( schemes=["bcrypt"],deprecated="auto")
 
 def hash_password(password: str):
@@ -24,7 +24,7 @@ def verify_password( plain_password: str, hashed_password: str):
 def create_access_token(data: dict):
     to_encode = data.copy()
     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
+    to_encode.update({"exp": expire, "type": "access"})
     return jwt.encode(  to_encode, settings.SECRET_KEY,    algorithm=ALGORITHM   )
 
 def decode_token(token: str):#
@@ -33,3 +33,19 @@ def decode_token(token: str):#
         return payload
     except JWTError:
         raise HTTPException(status_code=401, detail=" JWTError " )
+    
+
+def create_refresh_token(data: dict):
+
+    to_encode = data.copy()
+
+    expire = datetime.utcnow() + timedelta(
+        days=REFRESH_TOKEN_EXPIRE_DAYS
+    )
+
+    to_encode.update({   "exp": expire,    "type": "refresh" })
+
+    return jwt.encode(    to_encode,    settings.SECRET_KEY,    algorithm=ALGORITHM )    
+
+
+

@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from core.dependencies import get_db
 from user.schema import UserCreate, UserResponse,UserProfile,UserUpdatePatch
 import user.service as service
-
+from fastapi import Query
 from core.dependencies import get_current_user
 router = APIRouter(prefix="/users", tags=["Users"])
 
@@ -18,9 +18,12 @@ def create(user: UserCreate, db: Session = Depends(get_db)):
     return service.create_user(db, user)
 
 
+# @router.get("/", response_model=list[UserResponse])
+# def read_all(db: Session = Depends(get_db)):
+#     return service.get_users(db)
 @router.get("/", response_model=list[UserResponse])
-def read_all(db: Session = Depends(get_db)):
-    return service.get_users(db)
+def read_all(db: Session = Depends(get_db),skip: int = 0,  limit: int =  Query(default=10, ge=1,le=100), search: str | None = None):# admin=Depends(get_current_admin)
+    return service.get_users(db,skip,limit,search)
 
 
 @router.get("/{user_id}", response_model=UserResponse)
