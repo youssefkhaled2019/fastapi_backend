@@ -10,4 +10,4 @@ class User(Base):
     email = Column(String, unique=True, nullable=False)
     password = Column(String,nullable=False)
     created_at = Column(    DateTime,   default=datetime.utcnow)
-    #role = Column(String, default="user")
+    role = Column(String, default="user")
