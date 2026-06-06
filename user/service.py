@@ -5,6 +5,7 @@ from fastapi import HTTPException
 from sqlalchemy.exc import IntegrityError
 from core.security import hash_password
 from sqlalchemy import or_
+from core.logger import logger
 def create_user(db: Session, user: UserCreate):
     #db_user=db.query(User).filter(  (User.email == user.email) | (User.username == user.username)).first()
     db_user = db.query( User).filter( or_( User.email == user.email,User.username == user.username ) ).first()
@@ -15,6 +16,7 @@ def create_user(db: Session, user: UserCreate):
         db.add(user_)
         db.commit()
         db.refresh(user_)
+        logger.warning( f"User create: {user_.id}"+" warning_2026_4")
         return user_
     except IntegrityError:
         db.rollback()
@@ -86,6 +88,7 @@ def delete_user(db: Session, user_id: int):
     try:
         db.delete(user)
         db.commit()
+        logger.warning( f"User deleted: {user_id}"+" warning_2026_3")
         return {"message": "User deleted successfully"}
     except IntegrityError:
         db.rollback()

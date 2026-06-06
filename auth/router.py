@@ -16,5 +16,5 @@ def login(user:LoginSchema,   db: Session = Depends(get_db)):
    return service.login(user,db)
 
 @router.post("/refresh")
-def refresh(data: RefreshTokenRequest):
-    return service.refresh_access_token( data.refresh_token )
+def refresh(data:RefreshTokenRequest,db: Session = Depends(get_db)):
+    return service.refresh_access_token(db, data.refresh_token )

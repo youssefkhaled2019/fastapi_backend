@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from core.database import engine,Base
+# from core.database import engine,Base
 from user.router import router as user_router
 from auth.router import router as auth_router
 app = FastAPI(title="fastapi Project")

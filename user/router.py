@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,HTTPException
 from sqlalchemy.orm import Session
 
-from core.dependencies import get_db
+from core.dependencies import get_db,get_current_admin
 from user.schema import UserCreate, UserResponse,UserProfile,UserUpdatePatch
 import user.service as service
 from fastapi import Query
@@ -22,7 +22,7 @@ def create(user: UserCreate, db: Session = Depends(get_db)):
 # def read_all(db: Session = Depends(get_db)):
 #     return service.get_users(db)
 @router.get("/", response_model=list[UserResponse])
-def read_all(db: Session = Depends(get_db),skip: int = 0,  limit: int =  Query(default=10, ge=1,le=100), search: str | None = None):# admin=Depends(get_current_admin)
+def read_all(db: Session = Depends(get_db),skip: int = 0,  limit: int =  Query(default=10, ge=1,le=100), search: str | None = None, admin=Depends(get_current_admin)):
     return service.get_users(db,skip,limit,search)
 
 
@@ -41,6 +41,6 @@ def update_patch(user_id: int, user: UserUpdatePatch, db: Session = Depends(get_
 
 
 @router.delete("/{user_id}")
-def delete(user_id: int, db: Session = Depends(get_db)):
+def delete(user_id: int, db: Session = Depends(get_db), admin=Depends(get_current_admin)):
     return service.delete_user(db, user_id)
 

@@ -4,6 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import or_
 from core import security
 from user.service import create_user
+from core.logger import logger
 # -----
 from core.security import decode_token, create_access_token
 def register_user(user,db: Session):
@@ -29,29 +30,27 @@ def login(user,   db: Session):
 
     db_user = db.query( User).filter(User.email == user.email ).first()
     if not db_user:
+        logger.warning(   f"Failed login attempt: {user.email}"+" warning_2026_1")
         raise HTTPException(status_code=400,detail="Invalid credentials")
 
     valid_password = security.verify_password(user.password,db_user.password)
 
     if not valid_password:
+        logger.warning(   f"Failed login attempt: {user.email}"+" warning_2026_2")
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     access_token = security.create_access_token( data={"sub":  str(db_user.id), "role": db_user.role}) #{"sub": str(user.id),  "role": user.role}
-    refresh_token = security.create_refresh_token( {     "sub": str(db_user.id) }
-)
-    if not access_token:
-        raise HTTPException( status_code=401, detail="Invalid credentials")
-        # return None
-    return {
-        "access_token": access_token,
-        "refresh_token": refresh_token,
-        "token_type": "bearer"
-    }
+    refresh_token = security.create_refresh_token( {     "sub": str(db_user.id) })
+    # if not access_token:  raise HTTPException( status_code=401, detail="Invalid credentials")  # return None
+
+    logger.info(f"User {db_user.email} logged in successfully"+" info_2026_1")    
+
+    return {   "access_token": access_token,    "refresh_token": refresh_token,    "token_type": "bearer"  }
 
 
 
 
-def refresh_access_token(refresh_token: str):
+def refresh_access_token( db: Session,refresh_token: str):
 
     payload = decode_token(refresh_token)
 
@@ -59,7 +58,8 @@ def refresh_access_token(refresh_token: str):
         raise HTTPException(      status_code=401,        detail="Invalid refresh token"    )
 
     user_id = payload.get("sub")
+    user = db.query(User).filter(User.id == int(user_id) ).first()
 
-    access_token = create_access_token({"sub": user_id,  } )
+    access_token = create_access_token({"sub": user_id, "role": user.role  } )
 
     return {  "access_token": access_token,    "token_type": "bearer"  }

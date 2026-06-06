@@ -1,4 +1,5 @@
 #cp .gitignore .dockerignore
+# README.md
 ---------------------- .gitignore ---------------------- 
 # ================= youssef ==================
 env/
@@ -17,7 +18,6 @@ summary_v3.py
 old/
 Dockerfile
 docker-compose*
-README.md
 *.pyc
 .media/
 link.txt
