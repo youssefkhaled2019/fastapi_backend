@@ -16,7 +16,7 @@ def create_user(db: Session, user: UserCreate):
         db.add(user_)
         db.commit()
         db.refresh(user_)
-        logger.warning( f"User create: {user_.id}"+" warning_2026_4")
+        logger.info( f"User create: {user_.id}"+" info_2026_4")
         return user_
     except IntegrityError:
         db.rollback()
@@ -34,8 +34,11 @@ def get_users(db: Session,skip: int = 0, limit: int = 10,search: str | None = No
     return query.offset(skip).limit(limit).all()
 
 def get_user(db: Session, user_id: int):
-    return db.query(User).filter(User.id == user_id).first()
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(    status_code=404,  detail="User not found")
 
+    return user
 
 def update_user(db: Session, user_id: int, updated_data: UserCreate):
     user = db.query(User).filter(User.id == user_id).first()
@@ -88,7 +91,7 @@ def delete_user(db: Session, user_id: int):
     try:
         db.delete(user)
         db.commit()
-        logger.warning( f"User deleted: {user_id}"+" warning_2026_3")
+        logger.info( f"User deleted: {user_id}"+" info_2026_3")
         return {"message": "User deleted successfully"}
     except IntegrityError:
         db.rollback()

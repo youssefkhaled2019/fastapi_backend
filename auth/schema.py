@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr,ConfigDict
 from pydantic import Field
 from datetime import datetime
 
@@ -15,8 +15,9 @@ class RegisterResponse(BaseModel):
     created_at: datetime
     role: str
 
-    class Config:
-        from_attributes = True
+    # class Config:
+    #     from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LoginSchema(BaseModel):
@@ -29,11 +30,10 @@ class LoginTokenResponse(BaseModel):
     access_token: str
     refresh_token: str
     token_type: str
-    class Config:
-        from_attributes = True
+    # class Config:
+    #     from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
-# class RefreshRequest(BaseModel):
-#     refresh_token: str
 
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
