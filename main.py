@@ -5,7 +5,7 @@ from auth.router import router as auth_router
 app = FastAPI(title="fastapi Project")
 
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
 
 
 app.include_router(user_router)
